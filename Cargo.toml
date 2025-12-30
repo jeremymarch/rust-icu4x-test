@@ -1,0 +1,10 @@
+[package]
+name = "rust-icu4x-test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+icu = { version = "2.1.1", features = ["serde"] }
+icu_provider = "2.1.1"
+icu_provider_blob = "2.1.1"
+icu_collator = "2.1.1"
