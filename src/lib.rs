@@ -26,16 +26,17 @@ pub fn sort_words<'a>(
 
     let collator = Collator::try_new_with_buffer_provider(
         &blob_provider,
-        locale!("el-u-kn-true").into(), //kn-true means to sort numbers numerically
+        locale!("el-u-kn-true").into(), //kn-true means to sort numbers numerically rather than as strings
         *options,
     )
     .expect("Greek collation data present");
 
     words.sort_by(|a, b| collator.as_borrowed().compare(a, b));
-
+    /*
     for word in &mut *words {
         println!("{}", word);
     }
+    */
     Ok(words.to_vec())
 }
 

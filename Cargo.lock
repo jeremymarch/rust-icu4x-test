@@ -597,7 +597,6 @@ version = "0.1.0"
 dependencies = [
  "icu",
  "icu_collator",
- "icu_provider",
  "icu_provider_blob",
 ]
 
