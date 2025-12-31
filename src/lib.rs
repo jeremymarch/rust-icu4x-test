@@ -1,16 +1,6 @@
-// https://www.credativ.de/en/blog/credativ-inside/icu4x-what-it-can-do-and-how-to-do-it/
-// To install the ICU4X data generator, run (version should match version of library):
-// cargo install icu4x-datagen --version 2.1.1 --force
-// To generate the Greek collation data, run:
-// icu4x-datagen --format blob --locales el --markers all --out greek_collation.blob
-//
-// https://github.com/unicode-org/icu4x/blob/main/tutorials/data-management.md
-// cargo build --release && icu4x-datagen --markers-for-bin target/release/myapp --locales ja --format blob --out my_data_blob.postcard --overwrite
-// cargo build --release && icu4x-datagen --markers-for-bin target/release/librust_icu4x_test.rlib --locales el --format blob --out greek_collation_blob.postcard --overwrite
-//
 use icu::locale::locale;
-use icu_collator::options::CollatorOptions;
 use icu_collator::Collator;
+use icu_collator::options::CollatorOptions;
 use icu_provider_blob::BlobDataProvider;
 
 pub fn sort_words<'a>(
