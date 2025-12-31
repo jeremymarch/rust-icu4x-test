@@ -89,6 +89,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "icu4x-unicode-tests"
+version = "0.1.0"
+dependencies = [
+ "icu",
+ "icu_collator",
+ "icu_provider_blob",
+]
+
+[[package]]
 name = "icu_calendar"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -590,15 +599,6 @@ name = "regex-automata"
 version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5276caf25ac86c8d810222b3dbb938e512c55c6831a10f3e6ed1c93b84041f1c"
-
-[[package]]
-name = "rust-icu4x-test"
-version = "0.1.0"
-dependencies = [
- "icu",
- "icu_collator",
- "icu_provider_blob",
-]
 
 [[package]]
 name = "serde"

@@ -14,7 +14,7 @@ icu4x-datagen --format blob --locales el --markers all --out greek_collation_blo
 
 Start with the above which includes all el data.  Then compile with this:  
 
-cargo build --release && icu4x-datagen --markers-for-bin target/release/librust_icu4x_test.rlib --locales el --format blob --out greek_collation_blob.postcard --overwrite
+cargo build --release && icu4x-datagen --markers-for-bin target/release/libicu4x-unicode-tests.rlib --locales el --format blob --out greek_collation_blob.postcard --overwrite
 
 The --markers-for-bin option includes only the keys used in the binary.  So this may need to be run three times: first to create the binary, then to generate the data based on the binary, and a third time to embed this generated data inside the binary.
 
