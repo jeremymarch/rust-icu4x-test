@@ -36,21 +36,26 @@ mod tests {
     use icu_collator::options::CaseLevel;
     use icu_collator::options::Strength;
 
-    #[test]
-    fn basic() {
-        let mut options = CollatorOptions::default();
-        options.strength = Some(Strength::Secondary);
-        options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
-
-        let mut words = vec!["ἄνθρωπος", "ἀγορά", "ἄγγελος", "Ἀθήνα", "ἀρετή"];
-        let result = sort_words(&mut words, &options);
-        assert!(result.is_ok());
-        if let Ok(r) = result {
-            assert_eq!(r, vec!["ἄγγελος", "ἀγορά", "Ἀθήνα", "ἄνθρωπος", "ἀρετή"]);
-            //sanity check
-            assert_ne!(r, vec!["ἀγορά", "ἄγγελος", "Ἀθήνα", "ἄνθρωπος", "ἀρετή"]);
-        }
-    }
+    const TEST_WORDS: [&str; 18] = [
+        "α1",
+        "α2",
+        "α10",
+        "α",
+        "\u{03B1}\u{0304}", //apha with combing macron
+        "ἃ ἅ",
+        "ἀ",
+        "ἄ",
+        "Ά",
+        "ἄγγελος",
+        "\u{1FB1}", //apha with precomposed macron
+        "ᾱ̓́ͅ",
+        "ἀάατος",
+        "ᾱ̓́ͅσομαι",
+        "Ἀθήνα",
+        "Α",
+        "ἀρετή",
+        "ά",
+    ];
 
     #[test]
     fn test_primary() {
@@ -58,26 +63,7 @@ mod tests {
         options.strength = Some(Strength::Primary);
         options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
 
-        let mut words = vec![
-            "α1",
-            "α2",
-            "α10",
-            "α",
-            "\u{03B1}\u{0304}", //apha with composing macron
-            "ἃ ἅ",
-            "ἀ",
-            "ἄ",
-            "Ά",
-            "ἄγγελος",
-            "\u{1FB1}", //apha with precomposed macron
-            "ᾱ̓́ͅ",
-            "ἀάατος",
-            "ᾱ̓́ͅσομαι",
-            "Ἀθήνα",
-            "Α",
-            "ἀρετή",
-            "ά",
-        ];
+        let mut words = TEST_WORDS.to_vec();
         let expected = vec![
             "α",
             "\u{03B1}\u{0304}", //apha with composing macron
@@ -111,23 +97,7 @@ mod tests {
         options.strength = Some(Strength::Secondary);
         options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
 
-        let mut words = vec![
-            "α",
-            "\u{03B1}\u{0304}", //apha with composing macron
-            "ἀ",
-            "ἄ",
-            "ἀάατος",
-            "ᾱ̓́ͅσομαι",
-            "Ά",
-            "\u{1FB1}", //apha with precomposed macron
-            "ἃ ἅ",
-            "ἄγγελος",
-            "ᾱ̓́ͅ",
-            "Ἀθήνα",
-            "Α",
-            "ἀρετή",
-            "ά",
-        ];
+        let mut words = TEST_WORDS.to_vec();
         let expected = vec![
             "α",
             "Α",
@@ -139,6 +109,9 @@ mod tests {
             "\u{1FB1}",         //apha with precomposed macron
             "ᾱ̓́ͅ",
             "ἃ ἅ",
+            "α1",
+            "α2",
+            "α10",
             "ἀάατος",
             "ἄγγελος",
             "Ἀθήνα",
@@ -158,23 +131,7 @@ mod tests {
         options.strength = Some(Strength::Tertiary);
         options.case_level = Some(CaseLevel::Off); //whether to distinguish case above the tertiary level
 
-        let mut words = vec![
-            "α",
-            "\u{03B1}\u{0304}", //apha with composing macron
-            "ἀ",
-            "ἃ ἅ",
-            "\u{1FB1}", //apha with precomposed macron
-            "ἄ",
-            "ἀάατος",
-            "Ά",
-            "ᾱ̓́ͅσομαι",
-            "ἄγγελος",
-            "ᾱ̓́ͅ",
-            "Ἀθήνα",
-            "Α",
-            "ἀρετή",
-            "ά",
-        ];
+        let mut words = TEST_WORDS.to_vec();
         let expected = vec![
             "α",
             "Α",
@@ -186,6 +143,9 @@ mod tests {
             "\u{1FB1}",         //apha with precomposed macron
             "ᾱ̓́ͅ",
             "ἃ ἅ",
+            "α1",
+            "α2",
+            "α10",
             "ἀάατος",
             "ἄγγελος",
             "Ἀθήνα",
@@ -205,26 +165,7 @@ mod tests {
         options.strength = Some(Strength::Quaternary);
         options.case_level = Some(CaseLevel::Off); //whether to distinguish case above the tertiary level
 
-        let mut words = vec![
-            "α1",
-            "α2",
-            "α10",
-            "α",
-            "\u{03B1}\u{0304}", //apha with composing macron
-            "ἀ",
-            "ἃ ἅ",
-            "ᾱ̓́ͅσομαι",
-            "ἄ",
-            "ἀάατος",
-            "\u{1FB1}", //apha with precomposed macron
-            "Ά",
-            "ἄγγελος",
-            "ᾱ̓́ͅ",
-            "Ἀθήνα",
-            "Α",
-            "ἀρετή",
-            "ά",
-        ];
+        let mut words = TEST_WORDS.to_vec();
         let expected = vec![
             "α",
             "Α",
