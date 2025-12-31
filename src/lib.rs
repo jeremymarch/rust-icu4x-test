@@ -24,9 +24,12 @@ pub fn sort_words<'a>(
     ))
     .unwrap();
 
-    let collator =
-        Collator::try_new_with_buffer_provider(&blob_provider, locale!("el").into(), *options)
-            .expect("Greek collation data present");
+    let collator = Collator::try_new_with_buffer_provider(
+        &blob_provider,
+        locale!("el-u-kn-true").into(), //kn-true means to sort numbers numerically
+        *options,
+    )
+    .expect("Greek collation data present");
 
     words.sort_by(|a, b| collator.as_borrowed().compare(a, b));
 
@@ -46,7 +49,7 @@ mod tests {
     fn basic() {
         let mut options = CollatorOptions::default();
         options.strength = Some(Strength::Secondary);
-        options.case_level = Some(CaseLevel::On);
+        options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
 
         let mut words = vec!["ἄνθρωπος", "ἀγορά", "ἄγγελος", "Ἀθήνα", "ἀρετή"];
         let result = sort_words(&mut words, &options);
@@ -62,40 +65,52 @@ mod tests {
     fn test_primary() {
         let mut options = CollatorOptions::default();
         options.strength = Some(Strength::Primary);
-        options.case_level = Some(CaseLevel::On);
+        options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
 
         let mut words = vec![
+            "α1",
+            "α2",
+            "α10",
             "α",
-            "ᾱ",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "ἃ ἅ",
             "ἀ",
             "ἄ",
             "Ά",
             "ἄγγελος",
+            "\u{1FB1}", //apha with precomposed macron
             "ᾱ̓́ͅ",
+            "ἀάατος",
+            "ᾱ̓́ͅσομαι",
             "Ἀθήνα",
             "Α",
             "ἀρετή",
             "ά",
         ];
+        let expected = vec![
+            "α",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "ἀ",
+            "ἄ",
+            "\u{1FB1}", //apha with precomposed macron
+            "ᾱ̓́ͅ",
+            "ά",
+            "Ά",
+            "Α",
+            "ἃ ἅ",
+            "α1",
+            "α2",
+            "α10",
+            "ἀάατος",
+            "ἄγγελος",
+            "Ἀθήνα",
+            "ἀρετή",
+            "ᾱ̓́ͅσομαι",
+        ];
         let result = sort_words(&mut words, &options);
         assert!(result.is_ok());
         if let Ok(r) = result {
-            assert_eq!(
-                r,
-                vec![
-                    "α",
-                    "ᾱ",
-                    "ἀ",
-                    "ἄ",
-                    "ᾱ̓́ͅ",
-                    "ά",
-                    "Ά",
-                    "Α",
-                    "ἄγγελος",
-                    "Ἀθήνα",
-                    "ἀρετή"
-                ]
-            );
+            assert_eq!(r, expected);
         }
     }
 
@@ -103,14 +118,18 @@ mod tests {
     fn test_secondary() {
         let mut options = CollatorOptions::default();
         options.strength = Some(Strength::Secondary);
-        options.case_level = Some(CaseLevel::On);
+        options.case_level = Some(CaseLevel::On); //whether to distinguish case above the tertiary level
 
         let mut words = vec![
             "α",
-            "ᾱ",
+            "\u{03B1}\u{0304}", //apha with composing macron
             "ἀ",
             "ἄ",
+            "ἀάατος",
+            "ᾱ̓́ͅσομαι",
             "Ά",
+            "\u{1FB1}", //apha with precomposed macron
+            "ἃ ἅ",
             "ἄγγελος",
             "ᾱ̓́ͅ",
             "Ἀθήνα",
@@ -118,25 +137,27 @@ mod tests {
             "ἀρετή",
             "ά",
         ];
+        let expected = vec![
+            "α",
+            "Α",
+            "ἀ",
+            "ἄ",
+            "ά",
+            "Ά",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "\u{1FB1}",         //apha with precomposed macron
+            "ᾱ̓́ͅ",
+            "ἃ ἅ",
+            "ἀάατος",
+            "ἄγγελος",
+            "Ἀθήνα",
+            "ἀρετή",
+            "ᾱ̓́ͅσομαι",
+        ];
         let result = sort_words(&mut words, &options);
         assert!(result.is_ok());
         if let Ok(r) = result {
-            assert_eq!(
-                r,
-                vec![
-                    "α",
-                    "Α",
-                    "ἀ",
-                    "ἄ",
-                    "ά",
-                    "Ά",
-                    "ᾱ",
-                    "ᾱ̓́ͅ",
-                    "ἄγγελος",
-                    "Ἀθήνα",
-                    "ἀρετή"
-                ]
-            );
+            assert_eq!(r, expected);
         }
     }
 
@@ -144,13 +165,67 @@ mod tests {
     fn test_teriary() {
         let mut options = CollatorOptions::default();
         options.strength = Some(Strength::Tertiary);
-        options.case_level = Some(CaseLevel::On);
+        options.case_level = Some(CaseLevel::Off); //whether to distinguish case above the tertiary level
 
         let mut words = vec![
             "α",
-            "ᾱ",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "ἀ",
+            "ἃ ἅ",
+            "\u{1FB1}", //apha with precomposed macron
+            "ἄ",
+            "ἀάατος",
+            "Ά",
+            "ᾱ̓́ͅσομαι",
+            "ἄγγελος",
+            "ᾱ̓́ͅ",
+            "Ἀθήνα",
+            "Α",
+            "ἀρετή",
+            "ά",
+        ];
+        let expected = vec![
+            "α",
+            "Α",
             "ἀ",
             "ἄ",
+            "ά",
+            "Ά",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "\u{1FB1}",         //apha with precomposed macron
+            "ᾱ̓́ͅ",
+            "ἃ ἅ",
+            "ἀάατος",
+            "ἄγγελος",
+            "Ἀθήνα",
+            "ἀρετή",
+            "ᾱ̓́ͅσομαι",
+        ];
+        let result = sort_words(&mut words, &options);
+        assert!(result.is_ok());
+        if let Ok(r) = result {
+            assert_eq!(r, expected);
+        }
+    }
+
+    #[test]
+    fn test_quaternary() {
+        let mut options = CollatorOptions::default();
+        options.strength = Some(Strength::Quaternary);
+        options.case_level = Some(CaseLevel::Off); //whether to distinguish case above the tertiary level
+
+        let mut words = vec![
+            "α1",
+            "α2",
+            "α10",
+            "α",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "ἀ",
+            "ἃ ἅ",
+            "ᾱ̓́ͅσομαι",
+            "ἄ",
+            "ἀάατος",
+            "\u{1FB1}", //apha with precomposed macron
             "Ά",
             "ἄγγελος",
             "ᾱ̓́ͅ",
@@ -159,25 +234,30 @@ mod tests {
             "ἀρετή",
             "ά",
         ];
+        let expected = vec![
+            "α",
+            "Α",
+            "ἀ",
+            "ἄ",
+            "ά",
+            "Ά",
+            "\u{03B1}\u{0304}", //apha with composing macron
+            "\u{1FB1}",         //apha with precomposed macron
+            "ᾱ̓́ͅ",
+            "ἃ ἅ",
+            "α1",
+            "α2",
+            "α10",
+            "ἀάατος",
+            "ἄγγελος",
+            "Ἀθήνα",
+            "ἀρετή",
+            "ᾱ̓́ͅσομαι",
+        ];
         let result = sort_words(&mut words, &options);
         assert!(result.is_ok());
         if let Ok(r) = result {
-            assert_eq!(
-                r,
-                vec![
-                    "α",
-                    "Α",
-                    "ἀ",
-                    "ἄ",
-                    "ά",
-                    "Ά",
-                    "ᾱ",
-                    "ᾱ̓́ͅ",
-                    "ἄγγελος",
-                    "Ἀθήνα",
-                    "ἀρετή"
-                ]
-            );
+            assert_eq!(r, expected);
         }
     }
 }
